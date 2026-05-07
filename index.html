@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediReminder</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</head>
+<body>
+    <!-- Auth Container -->
+    <div id="auth-container" class="auth-container">
+        <div class="auth-box">
+            <div class="logo auth-logo">
+                <ion-icon name="medkit"></ion-icon>
+                <span>MediReminder</span>
+            </div>
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="tab-login">Login</button>
+                <button class="auth-tab" id="tab-signup">Sign Up</button>
+            </div>
+            
+            <form id="login-form" class="auth-form active">
+                <input type="text" id="login-username" placeholder="Username" required>
+                <input type="password" id="login-password" placeholder="Password" required>
+                <button type="submit" class="btn btn-primary btn-block">Login</button>
+                <div id="login-msg" class="msg"></div>
+            </form>
+
+            <form id="signup-form" class="auth-form">
+                <input type="text" id="signup-username" placeholder="Username" required>
+                <input type="password" id="signup-password" placeholder="Password" required>
+                <input type="tel" id="signup-phone" placeholder="Phone Number (Optional)">
+                <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+                <div id="signup-msg" class="msg"></div>
+            </form>
+        </div>
+    </div>
+
+    <div class="app-container hidden" id="app-container">
+        <!-- Sidebar / Navigation -->
+        <nav class="sidebar">
+            <div class="logo">
+                <ion-icon name="medkit"></ion-icon>
+                <span>MediReminder</span>
+            </div>
+            <ul class="nav-links">
+                <li class="active" data-page="dashboard"><ion-icon name="grid"></ion-icon> Dashboard</li>
+                <li data-page="add-medicine"><ion-icon name="add-circle"></ion-icon> Add Medicine</li>
+                <li data-page="medicine-list"><ion-icon name="list"></ion-icon> Medicine List</li>
+                <li data-page="logs"><ion-icon name="time"></ion-icon> Daily Logs</li>
+                <li id="nav-logout" class="nav-logout"><ion-icon name="log-out"></ion-icon> Logout</li>
+            </ul>
+            <div class="dark-mode-toggle">
+                <ion-icon name="moon"></ion-icon>
+                <span>Dark Mode</span>
+                <label class="switch">
+                    <input type="checkbox" id="theme-switch">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <h1 id="page-title">Dashboard</h1>
+                <div class="top-actions">
+                    <button id="enable-notifications" class="btn btn-secondary">
+                        <ion-icon name="notifications"></ion-icon> Enable Alerts
+                    </button>
+                    <div class="clock" id="current-clock">00:00:00</div>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <!-- Dashboard Page -->
+                <section id="dashboard" class="page active">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon text-blue"><ion-icon name="medical"></ion-icon></div>
+                            <div class="stat-info">
+                                <h3>Total Medicines</h3>
+                                <p id="stat-total">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon text-green"><ion-icon name="checkmark-circle"></ion-icon></div>
+                            <div class="stat-info">
+                                <h3>Taken Today</h3>
+                                <p id="stat-taken">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon text-red"><ion-icon name="alert-circle"></ion-icon></div>
+                            <div class="stat-info">
+                                <h3>Missed / Pending</h3>
+                                <p id="stat-missed">0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-title mt-4">
+                        <h2>Upcoming Reminders</h2>
+                    </div>
+                    <div class="upcoming-list" id="upcoming-list">
+                        <!-- Upcoming medicine cards injected here -->
+                    </div>
+                </section>
+
+                <!-- Add Medicine Page -->
+                <section id="add-medicine" class="page">
+                    <div class="form-container">
+                        <h2><ion-icon name="add-circle-outline"></ion-icon> Add New Medicine</h2>
+                        <form id="add-med-form">
+                            <div class="form-group">
+                                <label for="med-name">Medicine Name</label>
+                                <input type="text" id="med-name" placeholder="e.g., Paracetamol" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="med-dosage">Dosage</label>
+                                <input type="text" id="med-dosage" placeholder="e.g., 500mg or 2 pills" required>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="med-time">Time</label>
+                                    <input type="time" id="med-time" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="med-frequency">Frequency</label>
+                                    <select id="med-frequency">
+                                        <option value="daily">Daily</option>
+                                        <option value="weekly">Weekly</option>
+                                        <option value="as_needed">As Needed</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Save Medicine</button>
+                            <div id="form-msg" class="msg"></div>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Medicine List Page -->
+                <section id="medicine-list" class="page">
+                    <div class="filters">
+                        <input type="text" id="search-med" placeholder="Search medicines...">
+                    </div>
+                    <div class="med-grid" id="med-grid">
+                        <!-- Medicine cards injected here -->
+                    </div>
+                </section>
+
+                <!-- Logs Page -->
+                <section id="logs" class="page">
+                    <h2>Daily Logs</h2>
+                    <div class="logs-container">
+                        <ul id="logs-list">
+                            <!-- Logs injected here -->
+                        </ul>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification Popup Modal -->
+    <div class="modal" id="alert-modal">
+        <div class="modal-content pulse-animation">
+            <div class="modal-icon"><ion-icon name="alarm"></ion-icon></div>
+            <h2 id="alert-title">Time for Medicine!</h2>
+            <p id="alert-msg">Please take your medicine.</p>
+            <div class="modal-actions">
+                <button class="btn btn-primary" id="btn-take-now">Mark as Taken</button>
+                <button class="btn btn-secondary" id="btn-snooze">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio for alert -->
+    <audio id="alert-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
