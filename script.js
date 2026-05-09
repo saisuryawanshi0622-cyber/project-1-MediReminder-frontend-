@@ -45,13 +45,13 @@ function init() {
     setupThemeToggle();
     setupClock();
     setupNotifications();
-    
+
     if (currentUserId) {
         showApp();
     } else {
         showAuth();
     }
-    
+
     // Check reminders every 10 seconds locally to trigger alerts smoothly
     setInterval(checkRemindersLocal, 10000);
 }
@@ -84,7 +84,7 @@ function setupAuth() {
         signupForm.classList.remove('active');
         loginMsg.innerText = '';
     });
-    
+
     tabSignup.addEventListener('click', () => {
         tabSignup.classList.add('active');
         tabLogin.classList.remove('active');
@@ -92,7 +92,7 @@ function setupAuth() {
         loginForm.classList.remove('active');
         signupMsg.innerText = '';
     });
-    
+
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const username = document.getElementById('login-username').value.trim();
@@ -161,16 +161,16 @@ function setupNavigation() {
         link.addEventListener('click', () => {
             navLinks.forEach(l => l.classList.remove('active'));
             link.classList.add('active');
-            
+
             const targetPage = link.getAttribute('data-page');
             pages.forEach(page => page.classList.remove('active'));
             document.getElementById(targetPage).classList.add('active');
-            
+
             pageTitle.innerText = link.innerText.trim();
-            
-            if(targetPage === 'dashboard' || targetPage === 'medicine-list') {
+
+            if (targetPage === 'dashboard' || targetPage === 'medicine-list') {
                 fetchMedicines();
-            } else if(targetPage === 'logs') {
+            } else if (targetPage === 'logs') {
                 fetchLogs();
             }
         });
@@ -182,7 +182,7 @@ function setupThemeToggle() {
     const isDark = localStorage.getItem('theme') === 'dark';
     themeSwitch.checked = isDark;
     if (isDark) document.body.setAttribute('data-theme', 'dark');
-    
+
     themeSwitch.addEventListener('change', (e) => {
         if (e.target.checked) {
             document.body.setAttribute('data-theme', 'dark');
@@ -214,7 +214,7 @@ function setupNotifications() {
             });
         }
     });
-    
+
     if ("Notification" in window && Notification.permission === "granted") {
         btnEnableNotif.innerHTML = '<ion-icon name="notifications-outline"></ion-icon> Alerts Enabled';
         btnEnableNotif.classList.replace('btn-secondary', 'btn-success');
@@ -257,7 +257,7 @@ addMedForm.addEventListener('submit', async (e) => {
     const dosage = document.getElementById('med-dosage').value;
     const time = document.getElementById('med-time').value;
     const frequency = document.getElementById('med-frequency').value;
-    
+
     try {
         const res = await fetch(`${API_URL}/add_medicine`, {
             method: 'POST',
@@ -265,7 +265,7 @@ addMedForm.addEventListener('submit', async (e) => {
             body: JSON.stringify({ name, dosage, time, frequency })
         });
         const data = await res.json();
-        
+
         if (res.ok) {
             formMsg.className = 'msg success';
             formMsg.innerText = data.message;
@@ -279,13 +279,13 @@ addMedForm.addEventListener('submit', async (e) => {
         formMsg.className = 'msg error';
         formMsg.innerText = "Failed to connect to server.";
     }
-    
+
     setTimeout(() => formMsg.innerText = '', 3000);
 });
 
 async function deleteMedicine(id) {
-    if(confirm("Are you sure you want to delete this medicine?")) {
-        await fetch(`${API_URL}/delete_medicine/${id}`, { 
+    if (confirm("Are you sure you want to delete this medicine?")) {
+        await fetch(`${API_URL}/delete_medicine/${id}`, {
             method: 'DELETE',
             headers: getHeaders()
         });
@@ -309,28 +309,28 @@ function renderDashboard() {
     const total = medicines.length;
     let taken = 0;
     let missed = 0;
-    
+
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
-    
+
     upcomingList.innerHTML = '';
-    
+
     medicines.forEach(med => {
         const [h, m] = med.time.split(':').map(Number);
         const medMinutes = h * 60 + m;
-        
+
         if (med.status === 'taken') {
             taken++;
         } else if (medMinutes < currentMinutes && med.status === 'not taken') {
             missed++;
         }
-        
+
         // Show in upcoming if not taken and within next 12 hours, or missed today
         if (med.status === 'not taken') {
             upcomingList.appendChild(createMedCard(med));
         }
     });
-    
+
     document.getElementById('stat-total').innerText = total;
     document.getElementById('stat-taken').innerText = taken;
     document.getElementById('stat-missed').innerText = missed;
@@ -345,7 +345,7 @@ function renderMedicineList(meds) {
 
 function renderLogs() {
     logsList.innerHTML = '';
-    if(logs.length === 0) {
+    if (logs.length === 0) {
         logsList.innerHTML = '<p class="text-muted">No logs available.</p>';
         return;
     }
@@ -361,19 +361,19 @@ function renderLogs() {
 
 function createMedCard(med) {
     const div = document.createElement('div');
-    
+
     // Determine card state
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
     const [h, m] = med.time.split(':').map(Number);
     const medMinutes = h * 60 + m;
-    
+
     let stateClass = '';
     if (med.status === 'taken') stateClass = 'taken';
     else if (medMinutes < currentMinutes) stateClass = 'missed';
-    
+
     div.className = `med-card ${stateClass}`;
-    
+
     div.innerHTML = `
         <div class="med-card-header">
             <div class="med-name">${med.name}</div>
@@ -387,11 +387,11 @@ function createMedCard(med) {
             <p><strong>Status:</strong> ${med.status.toUpperCase()}</p>
         </div>
         <div class="med-actions">
-            ${med.status !== 'taken' ? 
-                `<button class="btn btn-success" onclick="markAsTaken(${med.id})">
+            ${med.status !== 'taken' ?
+            `<button class="btn btn-success" onclick="markAsTaken(${med.id})">
                     <ion-icon name="checkmark"></ion-icon> Take
                 </button>` : ''
-            }
+        }
             <button class="btn btn-danger" onclick="deleteMedicine(${med.id})">
                 <ion-icon name="trash"></ion-icon>
             </button>
@@ -411,7 +411,7 @@ searchInput.addEventListener('input', (e) => {
 function checkRemindersLocal() {
     const now = new Date();
     const currentTimeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-    
+
     medicines.forEach(med => {
         if (med.time === currentTimeStr && med.status === 'not taken' && !notifiedMeds.has(med.id)) {
             triggerAlert(med);
@@ -423,14 +423,14 @@ function checkRemindersLocal() {
 function triggerAlert(med) {
     currentAlertMedId = med.id;
     alertMsg.innerText = `It's time to take ${med.dosage} of ${med.name}.`;
-    
+
     // Play Sound
     alertSound.currentTime = 0;
     alertSound.play().catch(e => console.log("Audio play blocked by browser."));
-    
+
     // Show Modal
     modal.classList.add('show');
-    
+
     // Show Browser Notification
     if ("Notification" in window && Notification.permission === "granted") {
         new Notification("MediReminder Alerts", {
@@ -448,7 +448,7 @@ function closeAlertModal() {
 
 btnSnooze.addEventListener('click', closeAlertModal);
 btnTakeNow.addEventListener('click', () => {
-    if(currentAlertMedId) {
+    if (currentAlertMedId) {
         markAsTaken(currentAlertMedId);
     }
 });
